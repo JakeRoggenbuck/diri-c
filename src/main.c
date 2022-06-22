@@ -100,9 +100,9 @@ void print_dir(char *name, int *zp) {
         int lang_type = get_lang(name);
         char *lang_name = lang_names[lang_type];
         if (lang_type != None) {
-            printf(" %-10s", lang_name);
+            printf(" %-12s", lang_name);
         } else {
-            cprint(" ----------", *zp);
+            cprint(" ------------", *zp);
         }
 
         cprint(" -- ", *zp);
