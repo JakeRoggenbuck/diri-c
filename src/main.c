@@ -7,6 +7,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+enum lang { Python, Rust, Java, JS, None };
+char *lang_names[6] = {"Python", "Rust", "Java", "JavaScript", ""};
+
 int is_directory(char *path) {
     struct stat path_stat;
     stat(path, &path_stat);
@@ -50,6 +53,28 @@ int is_local(char *path) {
     return 0;
 }
 
+int has_sub_file(char *path, char *sub) {
+    char sub_path[60];
+    strcpy(sub_path, path);
+    strcat(sub_path, sub);
+
+    return access(sub_path, F_OK) == 0;
+}
+
+enum lang get_lang(char *path) {
+    if (has_sub_file(path, "/setup.py")) {
+        return Python;
+    } else if (has_sub_file(path, "/package.json")) {
+        return JS;
+    } else if (has_sub_file(path, "/Cargo.toml")) {
+        return Rust;
+    } else if (has_sub_file(path, "/pom.xml")) {
+        return Java;
+    }
+
+    return None;
+}
+
 void print_dir(char *name, int *zp) {
     if (*zp == FG_CYAN) {
         (*zp)--;
@@ -72,6 +97,14 @@ void print_dir(char *name, int *zp) {
             cprint(" -----", *zp);
         }
 
+        int lang_type = get_lang(name);
+        char *lang_name = lang_names[lang_type];
+        if (lang_type != None) {
+            printf(" %-10s", lang_name);
+        } else {
+            cprint(" ----------", *zp);
+        }
+
         cprint(" -- ", *zp);
         printf("%s\n", name);
     }
@@ -92,6 +125,5 @@ int main() {
     }
 
     closedir(dr);
-
     return 0;
 }
