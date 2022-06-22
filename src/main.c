@@ -52,6 +52,7 @@ int is_local(char *path) {
 
 int main() {
     struct dirent *de;
+    int zebra = FG_PURPLE;
 
     DIR *dr = opendir(".");
 
@@ -60,8 +61,8 @@ int main() {
         return 0;
     }
 
-    int zebra = FG_PURPLE;
     while ((de = readdir(dr)) != NULL) {
+
         if (zebra == FG_CYAN) {
             zebra--;
         } else {
