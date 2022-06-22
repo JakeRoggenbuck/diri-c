@@ -50,11 +50,37 @@ int is_local(char *path) {
     return 0;
 }
 
+void print_dir(char *name, int *zp) {
+    if (*zp == FG_CYAN) {
+        (*zp)--;
+    } else {
+        (*zp)++;
+    }
+
+    if (is_directory(name) && !dont_show(name)) {
+        is_local(name);
+
+        if (has_git(name)) {
+            cprint("git", FG_GREEN);
+        } else {
+            cprint("---", *zp);
+        }
+
+        if (is_local(name)) {
+            cprint(" local", FG_YELLOW);
+        } else {
+            cprint(" -----", *zp);
+        }
+
+        cprint(" -- ", *zp);
+        printf("%s\n", name);
+    }
+}
+
 int main() {
     struct dirent *de;
-    int zebra = FG_PURPLE;
-
     DIR *dr = opendir(".");
+    int zebra = FG_PURPLE;
 
     if (dr == NULL) {
         printf("Could not be opened");
@@ -62,32 +88,7 @@ int main() {
     }
 
     while ((de = readdir(dr)) != NULL) {
-
-        if (zebra == FG_CYAN) {
-            zebra--;
-        } else {
-            zebra++;
-        }
-
-        char *name = de->d_name;
-        if (is_directory(name) && !dont_show(name)) {
-            is_local(name);
-
-            if (has_git(name)) {
-                cprint("git", FG_GREEN);
-            } else {
-                cprint("---", zebra);
-            }
-
-            if (is_local(name)) {
-                cprint(" local", FG_YELLOW);
-            } else {
-                cprint(" -----", zebra);
-            }
-
-            cprint(" -- ", zebra);
-            printf("%s\n", name);
-        }
+        print_dir(de->d_name, &zebra);
     }
 
     closedir(dr);
