@@ -16,6 +16,14 @@ int dont_show(char *path) {
     return (0 == strcmp(path, ".") || 0 == strcmp(path, ".."));
 }
 
+int has_git(char *path) {
+    char git_path[60];
+    strcpy(git_path, path);
+    strcat(git_path, "/.git");
+
+    return access(git_path, F_OK) == 0;
+}
+
 int main() {
     struct dirent *de;
 
@@ -27,8 +35,13 @@ int main() {
     }
 
     while ((de = readdir(dr)) != NULL) {
-        if (is_directory(de->d_name) && !dont_show(de->d_name)) {
-            printf("%s\n", de->d_name);
+        char *name = de->d_name;
+        if (is_directory(name) && !dont_show(name)) {
+            if (has_git(name)) {
+                printf("HAS GIT ");
+            }
+
+            printf("%s\n", name);
         }
     }
 
