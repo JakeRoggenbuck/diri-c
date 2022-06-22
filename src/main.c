@@ -1,3 +1,4 @@
+#include "termcolor.h"
 #include <dirent.h>
 #include <limits.h>
 #include <stdio.h>
@@ -5,7 +6,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "termcolor.h"
 
 int is_directory(char *path) {
     struct stat path_stat;
@@ -39,9 +39,12 @@ int main() {
         char *name = de->d_name;
         if (is_directory(name) && !dont_show(name)) {
             if (has_git(name)) {
-                cprint("HAS GIT ", FG_GREEN);
+                cprint("git", FG_GREEN);
+            } else {
+                printf("   ");
             }
 
+            printf(" -- ");
             printf("%s\n", name);
         }
     }
