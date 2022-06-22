@@ -9,5 +9,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 file(GLOB_RECURSE SOURCES src/*.c)
 
-add_executable(diri-c ${SOURCES})
+add_executable(diri-c ${SOURCES} termcolor-c/src/termcolor.c)
+include_directories(${PROJECT_SOURCE_DIR}/termcolor-c/src)
 target_include_directories(diri-c PRIVATE src)
