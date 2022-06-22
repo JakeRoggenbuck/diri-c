@@ -27,22 +27,27 @@ int has_git(char *path) {
 
 int is_local(char *path) {
     char git_path[60];
+    FILE *fp;
+    char buffer[255];
+    char new_buf[20];
+
     strcpy(git_path, path);
     strcat(git_path, "/.git/config");
 
-    FILE *fp;
-    char buffer[255];
     fp = fopen(git_path, "r");
     if (fp == NULL) {
         return 0;
     }
 
     while (fgets(buffer, 255, fp)) {
-        printf("%s\n", buffer);
+        strncpy(new_buf, buffer + 1, 3);
+        if (strcmp(new_buf, "url") == 0) {
+            return 1;
+        }
     }
 
     fclose(fp);
-	return 0;
+    return 0;
 }
 
 int main() {
@@ -55,7 +60,14 @@ int main() {
         return 0;
     }
 
+    int zebra = FG_PURPLE;
     while ((de = readdir(dr)) != NULL) {
+        if (zebra == FG_CYAN) {
+            zebra--;
+        } else {
+            zebra++;
+        }
+
         char *name = de->d_name;
         if (is_directory(name) && !dont_show(name)) {
             is_local(name);
@@ -63,10 +75,16 @@ int main() {
             if (has_git(name)) {
                 cprint("git", FG_GREEN);
             } else {
-                printf("   ");
+                cprint("---", zebra);
             }
 
-            printf(" -- ");
+            if (is_local(name)) {
+                cprint(" local", FG_YELLOW);
+            } else {
+                cprint(" -----", zebra);
+            }
+
+            cprint(" -- ", zebra);
             printf("%s\n", name);
         }
     }
