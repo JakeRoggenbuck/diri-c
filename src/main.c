@@ -47,12 +47,12 @@ int is_local(char *path) {
     while (fgets(buffer, 255, fp)) {
         strncpy(new_buf, buffer + 1, 3);
         if (strcmp(new_buf, "url") == 0) {
-            return 1;
+            return 0;
         }
     }
 
     fclose(fp);
-    return 0;
+    return 1;
 }
 
 int has_sub_file(char *path, char *sub) {
