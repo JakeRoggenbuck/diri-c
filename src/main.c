@@ -10,7 +10,8 @@
 #include <unistd.h>
 
 enum lang { Python, Rust, Java, JS, Go, None };
-char *lang_names[6] = {"Python", "Rust", "Java", "JavaScript", "Go", ""};
+char *lang_names[7] = {"Python", "Rust", "Java", "JavaScript", "Go", ""};
+char* lang_symbol[7] = {"🐍 ", "🦀 ", "☕ ", "JS ", "GO ", "  "};
 
 int is_directory(char *path) {
     struct stat path_stat;
@@ -103,13 +104,15 @@ void print_dir(char *name, int *zp) {
 
         int lang_type = get_lang(name);
         char *lang_name = lang_names[lang_type];
+        char *lang_sym = lang_symbol[lang_type];
         if (lang_type != None) {
             printf(" %-12s", lang_name);
+            printf(" %s", lang_sym);
         } else {
             cprint(" ------------", *zp);
+        	cprint(" -- ", *zp);
         }
 
-        cprint(" -- ", *zp);
         printf("%s\n", name);
     }
 }
