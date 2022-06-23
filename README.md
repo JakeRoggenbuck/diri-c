@@ -3,7 +3,12 @@
 
 ![image](https://user-images.githubusercontent.com/35516367/174980485-82a1ef3b-83d2-49e6-8412-ba2ff4aa744b.png)
 
-# Build
+## Build
 ```
 ./scripts/build.sh
+```
+
+## Install
+```
+./scripts/install.sh
 ```
