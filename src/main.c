@@ -2,9 +2,11 @@
 #include <dirent.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 enum lang { Python, Rust, Java, JS, None };
@@ -110,14 +112,14 @@ void print_dir(char *name, int *zp) {
     }
 }
 
-int main() {
+void show_mode() {
     struct dirent *de;
     DIR *dr = opendir(".");
     int zebra = FG_PURPLE;
 
     if (dr == NULL) {
         printf("Could not be opened");
-        return 0;
+        exit(EXIT_FAILURE);
     }
 
     while ((de = readdir(dr)) != NULL) {
@@ -125,5 +127,77 @@ int main() {
     }
 
     closedir(dr);
+}
+
+int count_dirs() {
+    struct dirent *de;
+    DIR *dr = opendir(".");
+    int count = 0;
+
+    if (dr == NULL) {
+        printf("Could not be opened");
+        exit(EXIT_FAILURE);
+    }
+
+    while ((de = readdir(dr)) != NULL) {
+        char *name = de->d_name;
+        if (is_directory(name) && !dont_show(name)) {
+            count++;
+        }
+    }
+
+    closedir(dr);
+    return count;
+}
+
+void random_mode() {
+    struct dirent *de;
+    DIR *dr = opendir(".");
+    int index = 0;
+
+    int count = count_dirs();
+
+    srand(time(0));
+    int random_index = (rand() % (count + 1));
+
+    if (dr == NULL) {
+        printf("Could not be opened");
+        exit(EXIT_FAILURE);
+    }
+
+    while ((de = readdir(dr)) != NULL) {
+        char *name = de->d_name;
+        if (is_directory(name) && !dont_show(name)) {
+            index++;
+
+            int color = FG_CYAN;
+            if (index == random_index) {
+                print_dir(name, &color);
+            }
+        }
+    }
+
+    closedir(dr);
+}
+
+int main(int argc, char *argv[]) {
+
+    int opt;
+    enum { SHOW, RANDOM } mode = SHOW;
+
+    while ((opt = getopt(argc, argv, "sr")) != -1) {
+        switch (opt) {
+        case 's':
+            show_mode();
+            break;
+        case 'r':
+            random_mode();
+            break;
+        default:
+            fprintf(stderr, "Usage: %s [-sr]\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
     return 0;
 }
