@@ -11,7 +11,7 @@
 
 enum lang { Python, Rust, Java, JS, Go, None };
 char *lang_names[7] = {"Python", "Rust", "Java", "JavaScript", "Go", ""};
-char* lang_symbol[7] = {"🐍 ", "🦀 ", "☕ ", "JS ", "GO ", "  "};
+char *lang_symbol[7] = {"🐍 ", "🦀 ", "☕ ", "JS ", "GO ", "  "};
 
 int is_directory(char *path) {
     struct stat path_stat;
@@ -110,7 +110,7 @@ void print_dir(char *name, int *zp) {
             printf(" %s", lang_sym);
         } else {
             cprint(" ------------", *zp);
-        	cprint(" -- ", *zp);
+            cprint(" -- ", *zp);
         }
 
         printf("%s\n", name);
@@ -193,15 +193,25 @@ int main(int argc, char *argv[]) {
     while ((opt = getopt(argc, argv, "sr")) != -1) {
         switch (opt) {
         case 's':
-            show_mode();
+            mode = SHOW;
             break;
         case 'r':
-            random_mode();
+            mode = RANDOM;
             break;
         default:
             fprintf(stderr, "Usage: %s [-sr]\n", argv[0]);
             exit(EXIT_FAILURE);
         }
+    }
+
+    switch (mode) {
+    case SHOW:
+        show_mode();
+        break;
+
+    case RANDOM:
+        random_mode();
+        break;
     }
 
     return 0;
