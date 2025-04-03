@@ -34,20 +34,21 @@ int has_git(char *path) {
 int is_local(char *path) {
     char git_path[60];
     FILE *fp;
-    char buffer[255];
+    char buffer[256];
     char new_buf[20];
+    const char search_chars[4] = "url";
 
     strcpy(git_path, path);
     strcat(git_path, "/.git/config");
 
     fp = fopen(git_path, "r");
     if (fp == NULL) {
-        return 0;
+        return 1;
     }
 
-    while (fgets(buffer, 255, fp)) {
-        strncpy(new_buf, buffer + 1, 3);
-        if (strcmp(new_buf, "url") == 0) {
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        if (strstr(buffer, search_chars) != NULL) {
+            fclose(fp);
             return 0;
         }
     }
@@ -88,15 +89,14 @@ void print_dir(char *name, int *zp) {
     }
 
     if (is_directory(name) && !dont_show(name)) {
-        is_local(name);
-
-        if (has_git(name)) {
+        int check_has_git = has_git(name);
+        if (check_has_git) {
             cprint("git", FG_GREEN);
         } else {
             cprint("---", *zp);
         }
 
-        if (is_local(name)) {
+        if (check_has_git && is_local(name)) {
             cprint(" local", FG_YELLOW);
         } else {
             cprint(" -----", *zp);
